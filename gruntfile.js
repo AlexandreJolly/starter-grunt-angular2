@@ -5,6 +5,7 @@ module.exports = function(grunt){
      * for each dependency, which would quickly add up as we find and install other plugins.
      */
     require("matchdep").filterDev("grunt-*").forEach(grunt.loadNpmTasks);
+    var npm = require('npm');
     
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -329,12 +330,19 @@ module.exports = function(grunt){
                 tasks: ['jade']
             },
             js: {
-                files : ['dev/js/*.js', 'dev/js/**/*.js'],
+                files: ['dev/js/*.js', 'dev/js/**/*.js'],
                 tasks: ['buildjs']
             },
             ts: {
-                files : ['dev/app/**/*.ts'],
+                files: ['dev/app/**/*.ts'],
                 tasks: ['typescript']
+            },
+            express: {
+                files: ['server/server.js', 'app/index.html'],
+                tasks: ['express:dev'],
+                options: {
+                    spawn: false
+                }
             }
         }
     });
@@ -352,4 +360,27 @@ module.exports = function(grunt){
     grunt.registerTask('dev', ['prepross', 'watch']);
     grunt.registerTask('-b', ['build']);
     grunt.registerTask('-d', ['dev']);
+
+    grunt.registerTask('npm', 'Install npm modules.', function () {
+        var modules = Array.prototype.slice.call(arguments);
+        var done = this.async();
+
+        function errorHandler(err) {
+            if (err) {
+                grunt.log.error(err);
+            }
+            done();
+        }
+
+        npm.load(function (err, npm) {
+            if (err) {
+                grunt.log.error(err);
+                return;
+            }
+
+            npm.commands.install(modules, errorHandler);
+        });
+    });
+
+    grunt.registerTask('deploy', ['npm', 'prepross', 'express:dev', 'watch:express']);
 };
