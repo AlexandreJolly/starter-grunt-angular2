@@ -12,7 +12,7 @@ module.exports = function(grunt){
         /*
          * Clean files and folders
          */        
-        clean:["build/app", "build/assets", "build/css", "build/js", "build/lib", "build/styles", "build/index.html"],
+        clean:["build/"],
 
         /*
          * Concatenate files
@@ -49,7 +49,18 @@ module.exports = function(grunt){
                     {expand: true, flatten: true, src: ['dev/assets/videos/*'], dest: 'build/medias/videos/'},
                     {expand: true, flatten: true, src: ['dev/assets/fonts/*'], dest: 'build/fonts/'},
                     {expand: true, flatten: true, src: ['dev/**/*.html'], dest: 'build/'},
-                    {expand: true, flatten: true, src: ['systemjs.config.js'], dest: 'build/lib/'}
+                    {expand: true, flatten: true, src: ['systemjs.config.js'], dest: 'build/node_modules/'},
+                    {expand: true, cwd: 'node_modules/angular2',  src: '**/*', dest: 'build/node_modules/angular2'},
+                    {expand: true, cwd: 'node_modules/@angular',  src: '**/*', dest: 'build/node_modules/@angular'},
+                    {expand: true, cwd: 'node_modules/angular2',  src: '**/*', dest: 'build/node_modules/angular2'},
+                    {expand: true, cwd: 'node_modules/es6-promise',  src: '**/*', dest: 'build/node_modules/es6-promise'},
+                    {expand: true, cwd: 'node_modules/es6-shim',  src: '**/*', dest: 'build/node_modules/es6-shim'},
+                    {expand: true, cwd: 'node_modules/reflect-metadata',  src: '**/*', dest: 'build/node_modules/reflect-metadata'},
+                    {expand: true, cwd: 'node_modules/zone.js',  src: '**/*', dest: 'build/node_modules/zone.js'},
+                    {expand: true, cwd: 'node_modules/core-js',  src: '**/*', dest: 'build/node_modules/core-js'},
+                    {expand: true, cwd: 'node_modules/systemjs',  src: '**/*', dest: 'build/node_modules/systemjs'},
+                    {expand: true, cwd: 'node_modules/rxjs',  src: '**/*', dest: 'build/node_modules/rxjs'},
+                    {expand: true, flatten: true, src: ['systemjs.config.js'], dest: 'build/node_modules/'}
                 ],
             },
         },    
