@@ -4,16 +4,15 @@ module.exports = function(grunt){
      * Without matchdep, we would have to write grunt.loadNpmTasks("grunt-task-name"); 
      * for each dependency, which would quickly add up as we find and install other plugins.
      */
-    require("matchdep").filterDev("grunt-*").forEach(grunt.loadNpmTasks);
-    var npm = require('npm');
-    
+    require("matchdep").filterDev("grunt-*").forEach(grunt.loadNpmTasks);    
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
         /*
          * Clean files and folders
          */        
-        clean:["build/"],
+        clean:["build"],
 
         /*
          * Concatenate files
@@ -31,11 +30,11 @@ module.exports = function(grunt){
                 dest: 'build/js/deps.js',
             },
             main: {
-                src: ['dev/js/**/*.js', 'dev/js/*.js', '!dev/js/ga.js'],
+                src: ['client/js/**/*.js', 'client/js/*.js', '!client/js/ga.js'],
                 dest: 'build/js/main.js',
             },
             ga: {
-                src: ['dev/js/ga.js'],
+                src: ['client/js/ga.js'],
                 dest: 'build/js/ga.js',
             },
         },
@@ -46,11 +45,15 @@ module.exports = function(grunt){
         copy: {
             main: {
                 files: [
-                    {expand: true, flatten: true, src: ['dev/assets/images/*'], dest: 'build/medias/images/'},
-                    {expand: true, flatten: true, src: ['dev/assets/videos/*'], dest: 'build/medias/videos/'},
-                    {expand: true, flatten: true, src: ['dev/assets/fonts/*'], dest: 'build/fonts/'},
-                    {expand: true, flatten: true, src: ['dev/**/*.html'], dest: 'build/'},
-                    {expand: true, flatten: true, src: ['systemjs.config.js'], dest: 'build/node_modules/'},
+                    {expand: true, flatten: true, src: ['client/assets/images/*'], dest: 'build/medias/images/'},
+                    {expand: true, flatten: true, src: ['client/assets/videos/*'], dest: 'build/medias/videos/'},
+                    {expand: true, flatten: true, src: ['client/assets/fonts/*'], dest: 'build/fonts/'},
+                    {expand: true, flatten: true, src: ['client/**/*.html'], dest: 'build/'},
+                    {expand: true, flatten: true, src: ['client/config/systemjs.config.js'], dest: 'build/config/'}
+                ]
+            },
+            node_modules:{
+                files:[
                     {expand: true, cwd: 'node_modules/angular2',  src: '**/*', dest: 'build/node_modules/angular2'},
                     {expand: true, cwd: 'node_modules/@angular',  src: '**/*', dest: 'build/node_modules/@angular'},
                     {expand: true, cwd: 'node_modules/angular2',  src: '**/*', dest: 'build/node_modules/angular2'},
@@ -60,8 +63,7 @@ module.exports = function(grunt){
                     {expand: true, cwd: 'node_modules/zone.js',  src: '**/*', dest: 'build/node_modules/zone.js'},
                     {expand: true, cwd: 'node_modules/core-js',  src: '**/*', dest: 'build/node_modules/core-js'},
                     {expand: true, cwd: 'node_modules/systemjs',  src: '**/*', dest: 'build/node_modules/systemjs'},
-                    {expand: true, cwd: 'node_modules/rxjs',  src: '**/*', dest: 'build/node_modules/rxjs'},
-                    {expand: true, flatten: true, src: ['systemjs.config.js'], dest: 'build/node_modules/'}
+                    {expand: true, cwd: 'node_modules/rxjs',  src: '**/*', dest: 'build/node_modules/rxjs'}                                        
                 ],
             },
         },    
@@ -98,7 +100,7 @@ module.exports = function(grunt){
          */
         express: {
             options: {
-                port: 2016,
+                port: 80,
                 hostname: "*",
                 bases: ["build"],
                 livereload: true
@@ -158,7 +160,7 @@ module.exports = function(grunt){
          * Validate files with JSHint
          */
         jshint: {
-            all: ['gruntfile.js', 'dev/js/*.js', 'dev/js/**/*.js', '!dev/js/vendor/*.js', '!dev/js/ga.js']
+            all: ['gruntfile.js', 'client/js/*.js', 'client/js/**/*.js', '!client/js/vendor/*.js', '!client/js/ga.js']
         },
 
         /*
@@ -172,43 +174,26 @@ module.exports = function(grunt){
         },
 
         /*
-         * Compile JadeLang to HTML (new npm name: PUG)
-         * A clean, whitespace-sensitive template language for writing HTML
-         */
-        jade: {
-            compile: {
-                options: {
-                    pretty: true,
-                },
-                files: [{
-                    cwd: "dev/views",
-                    src: "*.jade",
-                    dest: "build",
-                    expand: true,
-                    ext: ".html"
-                }],
-            }
-        },
-
-        /*
          * Compile SASS/SCSS to CSS
          */
         sass : {
             dev: {
                 options: {
+                    bundleExec: true,
                     style: 'expanded'
                 },
                 files: {
-                    'build/styles/main.css': 'dev/sass/master.scss'
+                    'build/styles/main.css': 'client/sass/master.scss'
                 }
             },
             build: {
                 options: {
+                    bundleExec: true,
                     style: 'compressed',
                     sourcemap: 'none'
                 },
                 files: {
-                    'build/styles/main.min.css': 'dev/sass/master.scss'
+                    'build/styles/main.min.css': 'client/sass/master.scss'
                 }
             }
         },
@@ -218,9 +203,9 @@ module.exports = function(grunt){
          */
         sprite:{
             all: {
-                src: 'dev/assets/sprites/*.png',
+                src: 'client/assets/sprites/*.png',
                 dest: 'build/assets/sprites/sprites.png',
-                destCss: 'dev/sass/assets/_sprites.scss',
+                destCss: 'client/sass/assets/_sprites.scss',
                 imgPath: '../assets/sprites/sprites.png',
                 padding: 8
             }
@@ -228,7 +213,7 @@ module.exports = function(grunt){
 
         typescript: {
             base: {
-                src: ['dev/app/**/*.ts'],
+                src: ['client/app/**/*.ts'],
                 dest:'build/app',
                 options: {
                     "target": "es5",
@@ -271,9 +256,9 @@ module.exports = function(grunt){
          */
         webfont: {
             icons: {
-                src: ['dev/assets/icons/*.svg'],
+                src: ['client/assets/icons/*.svg'],
                 dest: 'build/fonts',
-                destCss: 'dev/sass/fonts',
+                destCss: 'client/sass/fonts',
                 options: {
                     fontFilename: "ico",
                     hashes: false,
@@ -303,84 +288,76 @@ module.exports = function(grunt){
                 livereload: true,
             },
             html: {
-                files: ['dev/**/*.html'],
+                files: ['client/**/*.html'],
                 tasks: ['htmlhint'],
                 options: {
                 livereload: true,
             }
             },            
             css: {
-                files: ['dev/sass/**/*.scss'],
-                tasks: ['buildcss']
+                files: ['client/sass/**/*.scss'],
+                tasks: ['css']
             },
             copy: {
-                files: ['dev/**/*'],
+                files: ['client/**/*'],
                 tasks: ['copy'],
             },
             webfont: {
-                files: ['dev/assets/icons/*.svg'],
+                files: ['client/assets/icons/*.svg'],
                 tasks: ['webfont'],
             },
             sprite: {
-                files: ['dev/assets/sprites/*.png'],
+                files: ['client/assets/sprites/*.png'],
                 tasks: ['sprite'],
             },
-            jade: {
-                files: ['dev/views/*.jade', 'dev/views/**/*.jade'],
-                tasks: ['jade']
-            },
             js: {
-                files: ['dev/js/*.js', 'dev/js/**/*.js'],
-                tasks: ['buildjs']
+                files : ['client/js/*.js', 'client/js/**/*.js'],
+                tasks: ['js']
             },
             ts: {
-                files: ['dev/app/**/*.ts'],
+                files : ['client/app/**/*.ts'],
                 tasks: ['typescript']
-            },
-            express: {
-                files: ['server/server.js', 'app/index.html'],
-                tasks: ['express:dev'],
-                options: {
-                    spawn: false
-                }
             }
         }
     });
+
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
+    grunt.loadNpmTasks('grunt-contrib-jade');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-rename');
+    grunt.loadNpmTasks('grunt-contrib-sass');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-cssc');
+    grunt.loadNpmTasks('grunt-express');
+    grunt.loadNpmTasks('grunt-express-server');
+    grunt.loadNpmTasks('grunt-htmlhint');
+    grunt.loadNpmTasks('grunt-md');
+    grunt.loadNpmTasks('grunt-open');
+    grunt.loadNpmTasks('grunt-parallel');
+    grunt.loadNpmTasks('grunt-spritesmith');
+    grunt.loadNpmTasks('grunt-typescript');
+    grunt.loadNpmTasks('grunt-typings');
+    grunt.loadNpmTasks('grunt-webfont');
 
     grunt.registerTask('default', []);
 
-    grunt.registerTask('buildassets', ['copy:main', 'sprite', 'webfont']);
-    grunt.registerTask('buildcss',  ['sass', 'cssc', 'cssmin']);
-    grunt.registerTask('buildhtml', ['jade']);
-    grunt.registerTask('buildjs', ['jshint', 'concat', 'uglify']);
+    grunt.registerTask('assets', ['copy', 'sprite', 'webfont']);
+    grunt.registerTask('css',  ['sass', 'cssc', 'cssmin']);
+    grunt.registerTask('js', ['jshint', 'concat', 'uglify']);
+    grunt.registerTask('build', ['clean', 'assets', 'css', 'typescript', 'js']);
 
-    grunt.registerTask('prepross', ['clean', 'buildassets', 'buildcss', 'typescript', 'buildjs']);
-
-    grunt.registerTask('build', ['prepross', 'express:dev', 'watch']);
-    grunt.registerTask('dev', ['prepross', 'watch']);
-    grunt.registerTask('-b', ['build']);
-    grunt.registerTask('-d', ['dev']);
-
-    grunt.registerTask('npm', 'Install npm modules.', function () {
-        var modules = Array.prototype.slice.call(arguments);
-        var done = this.async();
-
-        function errorHandler(err) {
-            if (err) {
-                grunt.log.error(err);
-            }
-            done();
-        }
-
-        npm.load(function (err, npm) {
-            if (err) {
-                grunt.log.error(err);
-                return;
-            }
-
-            npm.commands.install(modules, errorHandler);
-        });
-    });
-
-    grunt.registerTask('deploy', ['npm', 'prepross', 'express:dev', 'watch:express']);
+    grunt.registerTask(
+        'front',
+        'Install npm modules, built and display logs for front updates',
+        ['build', 'express:dev', 'watch']
+    );
+    grunt.registerTask(
+        'dev',
+        'Install npm modules, built and display logs for server updates',
+        ['build',  'watch']
+    );
 };
